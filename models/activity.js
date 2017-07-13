@@ -5,9 +5,12 @@ const path = require('path');
 const bodyParser = require('body-parser');
 
 const activitySchema = new mongoose.Schema({
-  id: {type: Number, required: true, unique: true},
   name: {type: String, required: true},
-  user_id: {type: Number, required: true}
+  creator: String,
+  data: [{
+    stat: {type: Number},
+    date: Date
+  }]
 });
 
 const Activity = mongoose.model('Activity', activitySchema);

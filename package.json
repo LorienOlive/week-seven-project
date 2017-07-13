@@ -11,13 +11,17 @@
     "body-parser": "~1.17.1",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.3",
-    "express": "~4.15.2",
+    "express": "^4.15.3",
+    "express-session": "^1.15.3",
+    "express-sessions": "^1.0.6",
+    "express-validator": "^3.2.1",
     "mongoose": "^4.11.1",
     "morgan": "^1.8.2",
     "mustache": "^2.3.0",
     "mustache-express": "^1.2.5",
     "passport": "^0.3.2",
     "passport-http": "^0.3.0",
+    "passport-session": "^1.0.2",
     "serve-favicon": "^2.4.3"
   }
 }
