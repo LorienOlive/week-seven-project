@@ -19,7 +19,7 @@
             {{/displayname}}
           </li>
           <li class="nav-item">
-            <form action="/api/logout" method="post" class="reset">
+            <form action="/logout" method="post" class="reset">
                 <button type="submit" name="logout" id="logout" value="">logout</button>
             </form>
           </li class="nav-item">
@@ -30,7 +30,7 @@
       </nav>
     </header>
     <div class="body-wrapper">
-      <form action="/api/home" method="post" class="makeActivity">
+      <form action="/home" method="post" class="makeActivity">
         <label for="activity">Enter a new activity</label>
         <input type="text" name="activity" placeholder="Enter an Activity">
         <input type="submit" class="button">

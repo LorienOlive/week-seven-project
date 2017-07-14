@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
 const path = require('path');
 const bodyParser = require('body-parser');
+const passportLocalMongoose = require('passport-local-mongoose');
 
 const activitySchema = new mongoose.Schema({
   name: {type: String, required: true},

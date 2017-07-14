@@ -4,65 +4,66 @@ const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
 const path = require('path');
 const bodyParser = require('body-parser');
-const mustacheExpress = require('mustache-express')
+const mustacheExpress = require('mustache-express');
+const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const passportSessions = require('passport-session');
-const BasicStrategy = require('passport-http').BasicStrategy;
-const bcrypt = require('bcryptjs');
-
-mongoose.connect('mongodb://localhost:27017/activities');
+const LocalStrategy = require('passport-local').Strategy;
 
 const routes = require('./routes/routes');
+const index = require('./routes/index');
 const Activity = require('./models/activity');
 const User = require('./models/user');
 
 const app = express();
 
-app.engine('mustache', mustacheExpress());
-app.set('views', './views');
-app.set('view engine', 'mustache');
-
-app.use(session({
-  secret: 'no touch monkey',
-  resave: false,
-  saveUninitialized: true,
-}));
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(cookieParser());
+app.use(require('express-session')({
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: false
+}));
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.engine('mustache', mustacheExpress());
+app.set('views', './views');
+app.set('view engine', 'mustache');
+app.use(express.static('public'));
 
-passport.use(new BasicStrategy(
-  function(username, password, done) {
-    User.findOne({ username: username }, function(err, user){
-      if (user && bcrypt.compareSync(password, user.password)){
-        return done(null, user);
-      }
-      return done(null, false);
-    });
+app.use('/', routes);
+app.use('/', index);
+
+passport.use(new LocalStrategy(User.authenticate()));
+
+function authenticationMiddleware () {
+  return function (req, res, next) {
+    if (req.isAuthenticated()) {
+      console.log("user was authenticated")
+      return next()
+    }
+    res.redirect('/login')
   }
-));
+}
 
 passport.serializeUser(function(user, done) {
-  done(null, user._id);
-  console.log("user serialized");
+  done(null, user.id);
+  console.log(user.username + ' serialized');
 });
 
 passport.deserializeUser(function(_id, done) {
-  User.findById(_id, function(err, user) {
-      console.log('user deserialized');
-      done(err, user);
-    })
+  User.findById(_id, function (err, user) {
+    if (err) { return done(err); }
+    console.log(user.username + ' deserialized');
+    done(null, user);
+  });
 });
 
-app.use(passport.authenticate('basic', {session: true}));
+mongoose.connect('mongodb://localhost:27017/activities');
 
-app.use('/', routes);
-
-app.listen(2000, function(){
+app.listen(3000, function(){
   console.log("Successfully started express application!")
 });
 
