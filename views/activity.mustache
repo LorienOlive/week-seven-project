@@ -46,8 +46,8 @@
         <li class="data-item">
           <span>{{date}}</span>
           <span>{{stat}}</span>
-          <form action="/activities/{{id}}/stats" method="post" class="deleteStat">
-            <button type="submit" class="deleteStat" name="deleteStat" value="{{date}}">Remove</button>
+          <form action="/stats/{{id}}" method="post" class="deleteStat">
+            <button type="submit" class="deleteStat" name="deleteStat" value="{{id}}">Remove</button>
           </form>
         </li>
         {{/data}}
