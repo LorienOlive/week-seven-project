@@ -10,7 +10,7 @@ const activitySchema = new mongoose.Schema({
   creator: String,
   data: [{
     stat: {type: Number},
-    date: Date
+    date: String
   }]
 });
 

@@ -17,6 +17,8 @@ const User = require('./models/user');
 
 const app = express();
 
+const ejs = require('ejs');
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -37,16 +39,6 @@ app.use('/', routes);
 app.use('/', index);
 
 passport.use(new LocalStrategy(User.authenticate()));
-
-function authenticationMiddleware () {
-  return function (req, res, next) {
-    if (req.isAuthenticated()) {
-      console.log("user was authenticated")
-      return next()
-    }
-    res.redirect('/login')
-  }
-}
 
 passport.serializeUser(function(user, done) {
   done(null, user.id);

@@ -12,43 +12,38 @@ const LocalStrategy = require('passport-local').Strategy;
 const Activity = require('../models/activity');
 const User = require('../models/user');
 
-router.get('/checkauth', function(req, res) {
-    res.status(200).json({
-        status: 'Login successful!'
-    });
-});
 
 router.get('/home', function (req, res) {
-  Activity.find()
-  .then(function (activity){
-    console.log(activity.name)
-    console.log("^^^ this is activity.name")
-    res.render('home', {displayname: req.session.displayname, activity: activity.name})
+  Activity.find({creator: req.session.userId})
+  .then(function (activity) {
+    res.render('home', {displayname: req.session.displayname, activity: activity})
   })
 })
 
 router.post('/home', function(req, res) {
-//     req.checkBody('activity', 'You must enter an activity').notEmpty();
-//     var errors = req.validationErrors();
-//     if (errors) {
-// // handle error
-//     } else {
-
-  const input = req.body.activity
-  const newActivity = new Activity({
-    name: input,
-    creator: req.session.userId,
-    })
-    newActivity.save()
-    .then(function (newActivity) {
-      console.log("new activity added to db");
-      res.redirect('/api/home');
-    }).catch(function (err) {
-      res.send("something went wrong", err);
-      console.log(err);
-    })
+  if (req.body.activity) {
+    const input = req.body.activity
+    const newActivity = new Activity({
+      name: input,
+      creator: req.session.userId,
+      })
+      newActivity.save()
+      .then(function (newActivity) {
+        console.log("new activity added to db");
+        res.redirect('/home');
+      }).catch(function (err) {
+        res.send("something went wrong", err);
+        console.log(err);
+      })
+   } else if (req.body.deleteButton) {
+     Activity.deleteOne({
+       _id: req.body.deleteButton
+     })
+     .then( function (activity) {
+        res.redirect('/home');
+     })
+   }
 })
-
 
 router.get('/activities', function (req, res) {
     Activity.find()
@@ -59,39 +54,20 @@ router.get('/activities', function (req, res) {
       .catch(function (err) {
         res.send("something went wrong", err);
       })
-  });
-
-// router.post('/api/activities', function (req, res) {
-//   var newActivity = new Activity({
-//     name: req.body.name,
-//     creator: req.body.user._id,
-//     data: [{
-//       stat: req.body.stat,
-//       date: req.body.date
-//     }]
-//   })
-//   newActivity.save()
-//     .then(function (newActivity) {
-//       console.log("new activity added to db");
-//       newActivity.find()
-//         .populate('creator')
-//         .exec(function (newActivity) {
-//       res.json(newActivity.toJSON());
-//       })
-//     }).catch(function (err) {
-//       res.send("something went wrong", err);
-//     });
-//   });
+});
 
 router.get('/activities/:id', function(req, res) {
-  Activity.findById(req.params.act_id)
+  Activity.findById(req.params.id)
     .then(function(activity) {
-      res.json(activity);
+      res.render('activity', {
+        displayname: req.session.displayname,
+        activity: activity
+      })
     })
     .catch(function (err) {
       res.send("something went wrong", err);
     })
-  });
+});
 
 router.put('/activities/:id', function (req, res) {
     Activity.findById(req.params.id)
@@ -106,6 +82,44 @@ router.put('/activities/:id', function (req, res) {
             res.send("something went wrong", err);
           })
     })
+});
+
+router.post("/activities/:id/stats", function (req, res) {
+  if (req.body.deleteStat) {
+    Activity.findById(req.params.id)
+    .then(function (activity) {
+      var arrayOfStats = activity.data;
+      var index = arrayOfStats.indexOf(req.body.deleteStat)
+      if (index > -1) {
+        arrayOfStats.splice(index, 1);
+      }
+      activity.save()
+      .then(function (activity) {
+        res.redirect('/activities/' + req.params.id);
+      })
+      .catch(function (err) {
+        res.send("something went wrong", err);
+      })
+    })
+    .catch(function (err) {
+      res.send("something went wrong", err);
+    })
+  } else {
+    Activity.findById(req.params.id)
+    .then(function (activity) {
+      activity.data.push({
+        stat: req.body.stat,
+        date: req.body.date
+      })
+      activity.save()
+      .then(function (activity) {
+      res.redirect('/activities/' + req.params.id);
+      })
+    })
+    .catch(function (err) {
+      res.send("something went wrong", err);
+    })
+  }
 });
 
 router.delete('/activities/:id', function (req, res) {

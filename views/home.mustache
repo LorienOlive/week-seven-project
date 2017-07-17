@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title>Stat Tracker - Home</title>
-
+    <link rel="stylesheet" href="/stylesheets/style.css">
   </head>
   <body>
     <header class="home-header">
@@ -19,9 +19,7 @@
             {{/displayname}}
           </li>
           <li class="nav-item">
-            <form action="/logout" method="post" class="reset">
-                <button type="submit" name="logout" id="logout" value="">logout</button>
-            </form>
+            <a href="/logout" class="logout-button">Logout</a>
           </li class="nav-item">
             <div class="logo"></div>
             <span class="gabble-top">Stat Tracker</span>
@@ -35,11 +33,19 @@
         <input type="text" name="activity" placeholder="Enter an Activity">
         <input type="submit" class="button">
       </form>
-      {{#activity}}
-      <div class="Activity-wrapper">
-        <div class="activity">{{activity.name}}</div>
+
+      <div class="activity-wrapper">
+        <ul class="activity-list">
+          {{#activity}}
+          <li class="activity"><a href="/activities/{{id}}" class="activity-link">{{name}}</a>
+            <form action="/home" method="post" class="delete-button">
+              <button type="submit" class="deleteButton" name="deleteButton" value="{{id}}">Delete</button>
+            </form>
+          </li>
+          {{/activity}}
+        </ul>
       </div>
-      {{/activity}}
+
     </div>
     <footer>
       <div class="logo"></div>

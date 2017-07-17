@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Stat Tracker - Activity</title>
+  </head>
+  <body>
+    <header class="home-header">
+      <nav>
+        <ul class="nav-row">
+          <li class="nav-item">
+            <div class="active-user-pic">
+            </div>
+            {{#displayname}}
+            <div class="displayname">
+            {{displayname}}
+            </div>
+            {{/displayname}}
+          </li>
+          <li class="nav-item">
+              <a href="/logout" class="logout-button">Logout</a>
+          </li class="nav-item">
+          <li class="nav-item">
+              <a href="/home" class="home-button">Home</a>
+          </li>
+          <li>
+            <div class="logo"></div>
+            <span class="statTracker-top">Stat Tracker</span>
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <div class="body-wrapper">
+      {{#activity}}
+      <h2 class="activity-header">{{name}}</h2>
+      <form action="/activities/{{id}}/stats" method="post" class="newStat">
+        <label for="date">Select a Date</label>
+        <input type="date" name="date" class="date-input">
+        <label for="stat">Enter a New Stat</label>
+        <input type="text" name="stat" placeholder="New Stat" class="stat-input">
+      </form>
+      <br>
+      <ul class="data-list">
+        {{#data}}
+        <li class="data-item">
+          <span>{{date}}</span>
+          <span>{{stat}}</span>
+          <form action="/activities/{{id}}/stats" method="post" class="deleteStat">
+            <button type="submit" class="deleteStat" name="deleteStat" value="{{date}}">Remove</button>
+          </form>
+        </li>
+        {{/data}}
+      </ul>
+      {{/activity}}
+    </div>
+  </body>
+</html>

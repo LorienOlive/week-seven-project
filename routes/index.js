@@ -9,10 +9,13 @@ const LocalStrategy = require('passport-local').Strategy;
 const passportLocalMongoose = require('passport-local-mongoose');
 
 
+router.get('/', function (req, res) {
+  res.redirect('/signup');
+})
+
 router.get('/signup', function(req, res) {
     res.render('signup');
 });
-
 
 router.post('/signup', function(req, res, next) {
     User.register(new User({ username: req.body.username,
@@ -22,7 +25,7 @@ router.post('/signup', function(req, res, next) {
         if (err) {
             console.log(user);
             console.log(err);
-            return res.send(err);
+            return res.redirect('/signup');
         }
         passport.authenticate('local')(req, res, function () {
 
@@ -41,7 +44,7 @@ router.get('/login', function(req, res) {
     res.render('login', { user : req.user });
 });
 
-router.post('/login', passport.authenticate('local'), function(req, res) {
+router.post('/login', function(req, res) {
   User.findOne({username: req.body.username})
   .then(function (user) {
     req.session.userId = user._id
@@ -53,12 +56,7 @@ router.post('/login', passport.authenticate('local'), function(req, res) {
 
 router.get('/logout', function(req, res) {
     req.logout();
-    req.session.destroy();
     res.redirect('/home');
-});
-
-router.get('/ping', function(req, res){
-    res.status(200).send("pong!");
 });
 
 module.exports = router;
